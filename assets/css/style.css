@@ -1,0 +1,37 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+body {
+  color: #777;
+
+}
+
+.jumbotron {
+  color: rgb(249, 243, 243) !important;
+  background: url("../images/bio_background.png");
+
+}
+
+.container {
+  color: #4aaaa5;
+
+}
+
+
+
+h1,
+h2 {
+  text-align: center;
+}
+
+h3{
+  color: #1a9c96;
+}
+
+.row {
+  background: #fff;
+  padding: 40px;
+  clear: both;
+}
