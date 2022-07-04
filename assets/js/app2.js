@@ -101,11 +101,18 @@ function buildBarChart(inputIds, inputLabels, inputValues ) {
       y: yticks,
       type: "bar",
       orientation: "h",
-      text: inputLabels
+      text: inputLabels,
+      marker: {
+        color: 'rgb(158,202,225)',
+        line: {
+          color: 'rgb(8,48,107)',
+          width: 1.5,
+        }
+      }
     }];
     //Create the layout for the bar chart. 
     var barLayout = {
-      title: "Top 10 Bacteria Cultures Found"
+      title: "<b>Top 10 Bacteria Cultures Found</b>"
     };
     //Use Plotly to plot the data with the layout. 
     Plotly.newPlot("bar", barData, barLayout);
@@ -131,7 +138,7 @@ function buildBubbleChart(inputIds, inputBubbleLabels, inputBubbleValues) {
 
   //Create the layout for the bubble chart.
   var bubbleLayout = {
-    title: "Bacteria Cultures Per Sample",
+    title: "<b>Bacteria Cultures Per Sample</b>",
     xaxis: { title: "OTU ID" },
     automargin: true,
     hovermode: "closest"
