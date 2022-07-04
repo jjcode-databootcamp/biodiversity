@@ -1,15 +1,14 @@
-//This file does refactor the charts and seperates it out into their own function for readability purposes 
-
+//This file refactor into es6 and further refactor to include as little as possible duplicate code
 
 // Step 1 - function to initialize the dashboard 
-function init() {
+const init = ()=>{
   // Grab a reference to the dropdown select element
-  var selector = d3.select("#selDataset");
+  let selector = d3.select("#selDataset");
   console.log("i ran");
   // Use the list of sample names to populate the select options
   d3.json("assets/data/samples.json").then((data) => {
 
-    var sampleNames = data.names;
+    let sampleNames = data.names;
     console.log(sampleNames)
     sampleNames.forEach((sample) => {
       selector
@@ -18,10 +17,12 @@ function init() {
         .property("value", sample);
     });
 
-    // Use the first sample from the list to build the initial plots
-    var firstSample = sampleNames[0];
-    baseBuildCharts(firstSample);
-    buildMetadata(firstSample);
+    // Use the first sample from the list to build the initial plots. 
+    let firstSample = sampleNames[0];
+    buildBaseBarBubbleCharts(firstSample, data);
+    buildMetadata(firstSample, data);
+    buildGaugeChart(firstSample, data)
+
   });
 }
 
@@ -29,23 +30,22 @@ function init() {
 init();
 
 // optional 
-function optionChanged(newSample) {
+const optionChanged = (newSample)=> {
   // Fetch new data each time a new sample is selected
   buildMetadata(newSample);
-  baseBuildCharts(newSample);
+  buildBaseBarBubbleCharts(newSample);
 
 }
 
 // Step 2: Build a function for Demographics Panel 
-function buildMetadata(sample) {
-  d3.json("assets/data/samples.json").then((data) => {
-    var metadata = data.metadata;
+const buildMetadata = (sample, data)=>{
+    let metadata = data.metadata;
     // Filter the data for the object with the desired sample number
-    var resultArray = metadata.filter(sampleObj => sampleObj.id == sample);
-    var result = resultArray[0];
+    let resultArray = metadata.filter(sampleObj => sampleObj.id == sample);
+    let result = resultArray[0];
 
     // Use d3 to select the panel with id of `#sample-metadata`
-    var PANEL = d3.select("#sample-metadata");
+    let PANEL = d3.select("#sample-metadata");
 
     // Use `.html("") to clear any existing metadata
     PANEL.html("");
@@ -54,50 +54,45 @@ function buildMetadata(sample) {
     Object.entries(result).forEach(([key, value]) => {
       PANEL.append("h6").text(`${key.toUpperCase()}: ${value}`);
     });
-
-  });
 }
 
 
 
 //Step 3 - Create the Build Chart Base Function 
 
-function baseBuildCharts(sample) {
-  //Use d3.json to load and retrieve the samples.json file 
-  d3.json("assets/data/samples.json").then((data) => {
+const buildBaseBarBubbleCharts =(sample, data)=>{
     // Create a variable that holds the samples array. 
-    var samples = data.samples;
+    let samples = data.samples;
     //Create a variable that filters the samples for the object with the desired sample number.
-    var resultArray = samples.filter(sampleObj => sampleObj.id == sample);
+    let resultArray = samples.filter(sampleObj => sampleObj.id == sample);
     //Create a variable that holds the first sample in the array.
-    var result = resultArray[0];
+    let result = resultArray[0];
 
     //Create variables that hold the otu_ids, otu_labels, and sample_values.
-    var ids = result.otu_ids;
-    var labels = result.otu_labels.slice(0, 10).reverse();
-    var values = result.sample_values.slice(0, 10).reverse();
+    let ids = result.otu_ids;
+    let labels = result.otu_labels.slice(0, 10).reverse();
+    let values = result.sample_values.slice(0, 10).reverse();
 
-    var bubbleLabels = result.otu_labels;
-    var bubbleValues = result.sample_values;
+    let bubbleLabels = result.otu_labels;
+    let bubbleValues = result.sample_values;
 
     //Evoke the function to build bar, bubble, gauge chart and pass the values it needs 
     buildBarChart(ids, labels, values)
     buildBubbleChart(ids, bubbleLabels, bubbleValues)
-    buildGaugeChart(data, sample)
+    
 
-  });
 }
 
 
 // Step 3a - Build Bar Chart  
-function buildBarChart(inputIds, inputLabels, inputValues ) {
+const buildBarChart = (inputIds, inputLabels, inputValues )=>{
    // Create the yticks for the bar chart.  Get the the top 10 otu_ids and map them in descending order so the otu_ids with the most bacteria are last. 
-  var yticks = inputIds.map(sampleObj => "OTU " + sampleObj).slice(0, 10).reverse();
+  let yticks = inputIds.map(sampleObj => "OTU " + sampleObj).slice(0, 10).reverse();
 
     console.log(yticks)
 
     //Create the trace for the bar chart. 
-    var barData = [{
+    let barData = [{
       x: inputValues,
       y: yticks,
       type: "bar",
@@ -112,7 +107,7 @@ function buildBarChart(inputIds, inputLabels, inputValues ) {
       }
     }];
     //Create the layout for the bar chart. 
-    var barLayout = {
+    let barLayout = {
       title: "<b>Top 10 Bacteria Cultures Found</b>"
     };
     //Use Plotly to plot the data with the layout. 
@@ -123,9 +118,9 @@ function buildBarChart(inputIds, inputLabels, inputValues ) {
 
 
 // Step 3b - Build Bubble Chart 
-function buildBubbleChart(inputIds, inputBubbleLabels, inputBubbleValues) {
+const buildBubbleChart =(inputIds, inputBubbleLabels, inputBubbleValues) => {
   //Create the trace for the bubble chart.
-  var bubbleData = [{
+  let bubbleData = [{
     x: inputIds,
     y: inputBubbleValues,
     text: inputBubbleLabels,
@@ -138,7 +133,7 @@ function buildBubbleChart(inputIds, inputBubbleLabels, inputBubbleValues) {
   }];
 
   //Create the layout for the bubble chart.
-  var bubbleLayout = {
+  let bubbleLayout = {
     title: "<b>Bacteria Cultures Per Sample</b>",
     xaxis: { title: "OTU ID" },
     automargin: true,
@@ -152,20 +147,20 @@ function buildBubbleChart(inputIds, inputBubbleLabels, inputBubbleValues) {
 }
 
 // Step 3c - Build Gauge Chart 
-function buildGaugeChart(inputData, inputSample) {
+const buildGaugeChart = (inputSample, inputData)=> {
   //Create a variable that filters the metadata array for the object with the desired sample number.
-  var metadata = inputData.metadata;
-  var gaugeArray = metadata.filter(metaObj => metaObj.id == inputSample);
+  let metadata = inputData.metadata;
+  let gaugeArray = metadata.filter(metaObj => metaObj.id == inputSample);
 
   //Create a variable that holds the first sample in the metadata array.
-  var gaugeResult = gaugeArray[0];
+  let gaugeResult = gaugeArray[0];
 
   //Create a variable that holds the washing frequency.  
-  var wfreqs = gaugeResult.wfreq;
+  let wfreqs = gaugeResult.wfreq;
   console.log(wfreqs)
 
   // 4. Create the trace for the gauge chart.
-  var gaugeData = [{
+  let gaugeData = [{
     value: wfreqs,
     type: "indicator",
     mode: "gauge+number",
@@ -186,7 +181,7 @@ function buildGaugeChart(inputData, inputSample) {
   }];
 
   //Create the layout for the gauge chart.
-  var gaugeLayout = {
+  let gaugeLayout = {
     automargin: true
   };
 

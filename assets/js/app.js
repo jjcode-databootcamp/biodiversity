@@ -1,4 +1,4 @@
-//This file does it in one function 
+//This file does it in one function and the original file 
 
 // Step 1 - function to initialize the dashboard 
 function init() {
