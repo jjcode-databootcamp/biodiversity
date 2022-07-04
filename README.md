@@ -1,4 +1,4 @@
-# Biodiversity
+# Belly Button Biodiversity Study 
 
 ## Overview 
 The goal of this project is to create an interactive dashboard to visualize the data collected for Belly Button Biodiversity. The data catalogs the microbes that colonize the human belly button. 
